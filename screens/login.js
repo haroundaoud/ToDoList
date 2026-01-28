@@ -1,3 +1,6 @@
+import { useNavigation } from "@react-navigation/native";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { useState } from "react";
 import {
   StyleSheet,
@@ -6,17 +9,32 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigation = useNavigation();
+
 
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      alert("Login successful !");
+      let user = auth.currentUser;
+      const docRef = doc (db,"users",user.uid);
+      const docSnap = await getDoc (docRef);
+      if (docSnap.exists()){
+        console.log("Document data:", docSnap.data());
+      } else {
+        console.log("No such document!");
+      }
+      let userData = docSnap.data();
+      alert(`Welcome back, ${userData.name}!`);
+      navigation.navigate("home");
+
+      
+    
+     
     } catch (error) {
       alert(error.message);
     }
@@ -45,6 +63,15 @@ export default function LoginScreen() {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate("register")}>
+  <Text style={{ textAlign: "center", marginTop: 20 }}>
+    Don’t have an account? Sign Up
+  </Text>
+</TouchableOpacity>
+
+      
+
     </View>
   );
 }
