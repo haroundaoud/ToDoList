@@ -31,8 +31,6 @@ export default function LoginScreen() {
       let userData = docSnap.data();
       alert(`Welcome back, ${userData.name}!`);
       navigation.navigate("home");
-
-      
     
      
     } catch (error) {

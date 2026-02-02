@@ -18,4 +18,3 @@ const db = getFirestore(app);
 
 export { auth, db };
 export default app;
-// End of firebase.js
